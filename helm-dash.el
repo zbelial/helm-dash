@@ -89,8 +89,10 @@
     (helm-build-sync-source (car docset)
       :action-transformer #'helm-dash-actions
       :candidates (lambda ()
+                    (setq helm-pattern (dash-docs--delete-docset-name (car docset) helm-pattern))
                     (cl-loop for row in (helm-dash--run-query docset helm-pattern)
-                             collect (helm-dash--candidate docset row)))
+                             collect (helm-dash--candidate docset row))
+                    )
       :volatile t
       :persistent-help "View doc"
       :requires-pattern helm-dash-min-length)))
@@ -100,9 +102,10 @@
 
 Narrowed docsets are those returned by
 `helm-dash-maybe-narrow-docsets'."
-  (let ((connections (helm-dash-maybe-narrow-docsets helm-pattern)))
+  (let ((connections (dash-docs-filter-connections)))
     (cl-loop for docset in connections
-             append (list (helm-dash--build-source docset)))))
+             append (list (helm-dash--build-source docset)))))            
+
 
 ;;; Autoloads
 
